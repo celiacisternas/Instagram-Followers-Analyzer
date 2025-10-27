@@ -6,14 +6,87 @@
     <title>Instagramfollowers</title>
 </head>
 <body>
-    
-</body>
-<script src = "followers_1.json" src = "following.json">
-     const followers = require('./followers_1.json')
-     const following = require('./following.json')
+    <h1>Instagramfollowers</h1>
+    <h2 id = "followersAmount">Total amount of followers: </h2>
+    <h2 id = "followingAmount">Total amount following: </h2>
+    <div id = "testDiv">
 
-     
-     console.log(followers)
-     console.log(following)
-</script>
+    </div>
+    <script>
+        console.log("this is a test message")
+
+        let followersList = new Array();
+        let followingList = new Array();
+        let noFollowBack = new Array();
+
+        // LOADS FOLLOWERS DATA AND PUTS INTO LIST
+        function loadFollowersData(callback){
+            fetch('followers_1.json') // Path to your JSON file
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json(); // Parse the JSON data
+                })
+                .then(followersData => {
+                    // Now 'data' is a JavaScript object
+                    const outputDiv = document.getElementById('testDiv');
+                    outputDiv.innerHTML = `
+                        <p>Name: ${followersData[0].string_list_data[0].value}</p>
+                    `;
+                    //console.log(followersData[0].string_list_data[0].value); // You can work with the data here
+                    
+                    for (const user of followersData) {
+                        username = user.string_list_data[0].value
+                        followersList.push(username)    
+                    }
+                    callback();
+                })
+                .catch(error => {
+                    console.error('Error loading JSON file:', error);
+                });
+            }
+
+        // LOADS FOLLOWING DATA AND PUTS INTO LIST
+        function loadFollowingData(callback) {
+            fetch('following.json') // Path to your JSON file
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json(); // Parse the JSON data
+                })
+                .then(followingData => {
+                    // Now 'data' is a JavaScript object
+                    //console.log(followingData.relationships_following[0].title); // You can work with the data here
+                                
+                    for (const user of followingData.relationships_following) {
+                        followingList.push(user.title)
+                    }
+                    callback();
+                })
+                .catch(error => {
+                    console.error('Error loading JSON file:', error);
+                });
+        }
+
+        function compareData() {
+            console.log(followingList[0]);
+            console.log(followersList[0]);
+
+            for (const user of followingList) {
+                if (!followersList.includes(user)) {
+                    noFollowBack.push(user)
+                }
+            }
+
+            console.log(noFollowBack)
+        }
+        
+        loadFollowersData(() => {
+            loadFollowingData(compareData);
+        });
+        
+    </script>
+</body>
 </html>
