@@ -7,13 +7,16 @@
 </head>
 <body>
     <h1>Instagramfollowers</h1>
-    <h2 id = "followersAmount">Total amount of followers: </h2>
-    <h2 id = "followingAmount">Total amount following: </h2>
-    <div id = "testDiv">
+    <h2 id = "followersAmount"> </h2>
+    <h2 id = "followingAmount"> </h2>
 
+    <div id = "NoFollowBackDiv">
+        <p>People who don't follow you back: </p>
+        <li id = "NoFollowBackList">
+
+        </li>
     </div>
     <script>
-        console.log("this is a test message")
 
         let followersList = new Array();
         let followingList = new Array();
@@ -21,7 +24,7 @@
 
         // LOADS FOLLOWERS DATA AND PUTS INTO LIST
         function loadFollowersData(callback){
-            fetch('followers_1.json') // Path to your JSON file
+            fetch('followers.json') // Path to your JSON file
                 .then(response => {
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
@@ -30,16 +33,17 @@
                 })
                 .then(followersData => {
                     // Now 'data' is a JavaScript object
-                    const outputDiv = document.getElementById('testDiv');
-                    outputDiv.innerHTML = `
-                        <p>Name: ${followersData[0].string_list_data[0].value}</p>
-                    `;
-                    //console.log(followersData[0].string_list_data[0].value); // You can work with the data here
                     
                     for (const user of followersData) {
-                        username = user.string_list_data[0].value
-                        followersList.push(username)    
+                        username = user.string_list_data[0].value;
+                        followersList.push(username)    ;
                     }
+
+                    const followersAmountText = document.getElementById("followersAmount");
+                    const followersAmountNum = followersList.length;
+                    followersAmountText.textContent = "Followers: "
+                                                        + followersAmountNum;
+
                     callback();
                 })
                 .catch(error => {
@@ -61,8 +65,14 @@
                     //console.log(followingData.relationships_following[0].title); // You can work with the data here
                                 
                     for (const user of followingData.relationships_following) {
-                        followingList.push(user.title)
+                        followingList.push(user.title);
                     }
+
+                    const followingAmountText = document.getElementById("followingAmount");
+                    const followingAmountNum = followingList.length;
+                    followingAmountText.textContent = "Following: " 
+                                                        + followingAmountNum;
+
                     callback();
                 })
                 .catch(error => {
@@ -71,16 +81,25 @@
         }
 
         function compareData() {
-            console.log(followingList[0]);
-            console.log(followersList[0]);
+            // console.log(followingList[0]);
+            // console.log(followersList[0]);
+            // console.log("Followers:", followersList.length);
+            // console.log("Following:", followingList.length);
 
             for (const user of followingList) {
                 if (!followersList.includes(user)) {
-                    noFollowBack.push(user)
+                    noFollowBack.push(user);
                 }
             }
+            const list = document.getElementById("NoFollowBackList");
 
-            console.log(noFollowBack)
+            for (const user of noFollowBack){
+                const item = document.createElement("li");
+                item.textContent = user;
+                list.appendChild(item);
+            }
+
+            // console.log(noFollowBack);
         }
         
         loadFollowersData(() => {
